@@ -1,4 +1,46 @@
-# easy-peasy-slash-command-app
-A template project to get you started writing Slack slash commands using Botkit
+# Work bot
 
-Follow along with [Easy Peasy Slash Commands](https://medium.com/slack-developer-blog/easy-peasy-slash-commands-getting-started-c37ff3f14d3e#.nfr4px2vi)
+## Features
+
+### Start
+
+This will set start of working time.
+
+```
+/workbot start
+```
+
+Returns following message:
+- Started working time: tuesday, **6.5.2017** at **7:45**. Time to get work done, we need to make some money.
+
+### Status
+
+This will show remaining working time.
+
+```
+/workbot status
+```
+
+Returns following message:
+- Remaining working time: **1:45**. Oh, the time flies so fast.
+
+### End
+
+This will set end of working time.
+
+```
+/workbot end
+```
+
+Returns following message:
+- Ended working time: tuesday, **6.5.2017** at **15:45**. Well, tomorrow is another day. Good job!
+
+---
+
+## Automation
+
+Command `/workbot status` could be called automatically when aproaching to end time.
+
+## API
+
+Using service api.ai
