@@ -46,11 +46,11 @@ Command `/workbot status` could be called automatically when aproaching to end t
 Run localtunnel:
 
 ```
-lt --port 8765 --subdomain myworkbot
+lt --port 8765 --subdomain workbot
 ```
 
 Url:
 
-https://myworkbot.localtunnel.me
+https://workbot.localtunnel.me
 
 // Deprecated idea: Using service api.ai -> Perhaps another day.
