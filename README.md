@@ -66,3 +66,7 @@ https://workbot.localtunnel.me/login
 ```
 CLIENT_ID=xxx.yyy CLIENT_SECRET=zzz VERIFICATION_TOKEN=qqq PORT=8765 npm start
 ```
+
+## Help
+
+[Botkit - Open-source toolkit for creating bots](https://howdy.ai/botkit/)
