@@ -115,9 +115,23 @@ controller.on('slash_command', function (slashCommand, message) {
         case '/work':
 
             if (message.text === 'start') {
-                slashCommand.replyPublic(message, 'Started working time: tuesday, **6.5.2017** at **7:45**. <br /><br />Time to get work done, we need to make some money.');
+                slashCommand.replyPublic(message,
+                    'Started working time: tuesday, **6.5.2017** at **7:45**.\n' +
+                    'Time to get work done, we need to make some money.'
+                );
             }
-
+            else if (message.text === 'status') {
+                slashCommand.replyPublic(message,
+                    'Remaining working time: **1:45**.\n' +
+                    'Oh, the time flies so fast.'
+                );
+            }
+            else if (message.text === 'end') {
+                slashCommand.replyPublic(message,
+                    'Ended working time: tuesday, **6.5.2017** at **15:45**.\n' +
+                    'Well, tomorrow is another day. Good job!'
+                );
+            }
 
             break;
         default:
