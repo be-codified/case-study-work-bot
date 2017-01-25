@@ -114,7 +114,7 @@ controller.on('slash_command', function (slashCommand, message) {
             break;
         case '/work':
 
-            if (message.text === 'start') { // test
+            if (message.text === 'start') {
                 slashCommand.replyPublic(message, 'Started working time: tuesday, **6.5.2017** at **7:45**. <br /><br />Time to get work done, we need to make some money.');
             }
 
