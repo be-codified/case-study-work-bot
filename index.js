@@ -56,7 +56,7 @@ if (process.env.MONGOLAB_URI) {
     };
 } else {
     config = {
-        json_file_store: './db_slackbutton_slash_command/',
+        json_file_store: './db_slackbutton_slash_command/'
     };
 }
 
@@ -64,7 +64,7 @@ var controller = Botkit.slackbot(config).configureSlackApp(
     {
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        scopes: ['commands'],
+        scopes: ['commands']
     }
 );
 
@@ -87,6 +87,8 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
 
 controller.on('slash_command', function (slashCommand, message) {
 
+    console.log(message);
+
     switch (message.command) {
         case "/echo": //handle the `/echo` slash command. We might have others assigned to this app too!
             // The rules are simple: If there is no text following the command, treat it as though they had requested "help"
@@ -108,6 +110,14 @@ controller.on('slash_command', function (slashCommand, message) {
             slashCommand.replyPublic(message, "1", function() {
                 slashCommand.replyPublicDelayed(message, "2").then(slashCommand.replyPublicDelayed(message, "3"));
             });
+
+            break;
+        case '/work':
+
+            if (message.text === 'start') {
+                slashCommand.replyPublic(message, 'Started working time: tuesday, **6.5.2017** at **7:45**. <br /><br />Time to get work done, we need to make some money.');
+            }
+
 
             break;
         default:

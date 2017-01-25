@@ -60,3 +60,9 @@ https://workbot.localtunnel.me
 ```
 https://workbot.localtunnel.me/login
 ```
+
+### Start
+
+```
+CLIENT_ID=xxx.yyy CLIENT_SECRET=zzz VERIFICATION_TOKEN=qqq PORT=8765 npm start
+```
