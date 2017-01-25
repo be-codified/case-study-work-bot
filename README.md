@@ -54,3 +54,9 @@ Url:
 https://workbot.localtunnel.me
 
 // Deprecated idea: Using service api.ai -> Perhaps another day.
+
+## Login teams
+
+```
+https://workbot.localtunnel.me/login
+```

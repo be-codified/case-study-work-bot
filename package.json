@@ -1,5 +1,5 @@
 {
-  "name": "Work bot",
+  "name": "workbot",
   "version": "1.0.0",
   "description": "Work bot with slash commands.",
   "main": "index.js",
