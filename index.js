@@ -1,4 +1,5 @@
 var Botkit = require('botkit');
+var moment = require('moment');
 
 // config
 
@@ -68,8 +69,11 @@ controller.on('slash_command', function (slashCommand, message) {
          */
 
         if (message.text === 'start') {
+            var timeStart = moment().format('dddd, DD.MM.YYYY [at] HH:MM');
+
+            // TODO: bold date/time
             slashCommand.replyPublic(message,
-                'Started working time: tuesday, **6.5.2017** at **7:45**.\n' +
+                'Started working time: ' + timeStart + '.\n' +
                 'Time to get work done, we need to make some money.'
             );
         }
