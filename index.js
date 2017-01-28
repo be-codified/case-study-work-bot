@@ -1,7 +1,11 @@
 var Botkit = require('botkit');
 var moment = require('moment');
+require('moment-duration-format');
 
-// config
+/**
+ * Config
+ *
+ */
 
 if (!process.env.CLIENT_ID ||
     !process.env.CLIENT_SECRET ||
@@ -33,7 +37,10 @@ var controller = Botkit.slackbot(config).configureSlackApp(
     }
 );
 
-// login
+/**
+ * Login
+ *
+ */
 
 controller.setupWebserver(process.env.PORT, function (err, webserver) {
     controller.createWebhookEndpoints(controller.webserver);
@@ -48,7 +55,32 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
     });
 });
 
-// commands
+/**
+ * Helpers
+ *
+ */
+
+var timeRemain = function(timeStart, timeNow) {
+    var timeMandatory = 8 * 60 * 60 * 1000; // 8 hours in miliseconds
+
+    return moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
+}
+
+
+// TODO: put this segment in commands section
+var timeStart = moment('2017-01-28T09:00:00.000'),
+    timeNow = moment();
+
+console.log(
+    'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:MM') + '*.\n' +
+    'Total time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
+    'Well, tomorrow is another day. Good job!'
+);
+
+/**
+ * Commands
+ *
+ */
 
 controller.on('slash_command', function (slashCommand, message) {
 
@@ -60,40 +92,40 @@ controller.on('slash_command', function (slashCommand, message) {
     // check for `work` command
     if (message.command === '/work') {
 
-        /*
-         // If we made it here, just echo what the user typed back at them
-         //TODO You do it!
-         slashCommand.replyPublic(message, "1", function () {
-         slashCommand.replyPublicDelayed(message, "2").then(slashCommand.replyPublicDelayed(message, "3"));
-         });
-         */
-
         if (message.text === 'start') {
             var timeStart = moment().format('dddd, DD.MM.YYYY [at] HH:MM');
 
-            // TODO: bold date/time
             slashCommand.replyPublic(message,
-                'Started working time: ' + timeStart + '.\n' +
+                'Started working time: *' + timeStart + '*.\n' +
                 'Time to get work done, we need to make some money.'
             );
         }
+
         else if (message.text === 'status') {
+            var timeStart = moment('2017-01-28T09:00:00.000'),
+                timeNow = moment(),
+                timeMandatory = 8 * 60 * 60 * 1000, // 8 hours in miliseconds
+                timeRemain = moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
+
             slashCommand.replyPublic(message,
-                'Remaining working time: **1:45**.\n' +
+                'Remaining working time: *' + timeRemain + '*.\n' +
                 'Oh, the time flies so fast.'
             );
         }
+
         else if (message.text === 'end') {
             slashCommand.replyPublic(message,
                 'Ended working time: tuesday, **6.5.2017** at **15:45**.\n' +
                 'Well, tomorrow is another day. Good job!'
             );
         }
+
         else {
             slashCommand.replyPublic(message,
                 'I\'m afraid I don\'t know how to ' + message.command + ' yet.'
             );
         }
+
     }
 });
 
