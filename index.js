@@ -66,7 +66,6 @@ var timeRemain = function(timeStart, timeNow) {
     return moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
 }
 
-
 // TODO: put this segment in commands section
 var timeStart = moment('2017-01-28T09:00:00.000'),
     timeNow = moment();
@@ -102,6 +101,7 @@ controller.on('slash_command', function (slashCommand, message) {
         }
 
         else if (message.text === 'status') {
+            /*
             var timeStart = moment('2017-01-28T09:00:00.000'),
                 timeNow = moment(),
                 timeMandatory = 8 * 60 * 60 * 1000, // 8 hours in miliseconds
@@ -111,13 +111,16 @@ controller.on('slash_command', function (slashCommand, message) {
                 'Remaining working time: *' + timeRemain + '*.\n' +
                 'Oh, the time flies so fast.'
             );
+            */
         }
 
         else if (message.text === 'end') {
+            /*
             slashCommand.replyPublic(message,
                 'Ended working time: tuesday, **6.5.2017** at **15:45**.\n' +
                 'Well, tomorrow is another day. Good job!'
             );
+            */
         }
 
         else {
