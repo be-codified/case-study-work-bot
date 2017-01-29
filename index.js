@@ -64,7 +64,7 @@ var timeRemain = function(timeStart, timeNow) {
     var timeMandatory = 8 * 60 * 60 * 1000; // 8 hours in miliseconds
 
     return moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
-}
+};
 
 /**
  * Commands
@@ -119,4 +119,3 @@ controller.on('slash_command', function (slashCommand, message) {
 
     }
 });
-
