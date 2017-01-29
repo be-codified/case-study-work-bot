@@ -66,16 +66,6 @@ var timeRemain = function(timeStart, timeNow) {
     return moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
 }
 
-// TODO: put this segment in commands section
-var timeStart = moment('2017-01-28T09:00:00.000'),
-    timeNow = moment();
-
-console.log(
-    'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:MM') + '*.\n' +
-    'Total time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
-    'Well, tomorrow is another day. Good job!'
-);
-
 /**
  * Commands
  *
@@ -101,26 +91,24 @@ controller.on('slash_command', function (slashCommand, message) {
         }
 
         else if (message.text === 'status') {
-            /*
-            var timeStart = moment('2017-01-28T09:00:00.000'),
-                timeNow = moment(),
-                timeMandatory = 8 * 60 * 60 * 1000, // 8 hours in miliseconds
-                timeRemain = moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
+            var timeStart = moment('2017-01-29T09:00:00.000'),
+                timeNow = moment();
 
             slashCommand.replyPublic(message,
-                'Remaining working time: *' + timeRemain + '*.\n' +
+                'Remaining working time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
                 'Oh, the time flies so fast.'
             );
-            */
         }
 
         else if (message.text === 'end') {
-            /*
+            var timeStart = moment('2017-01-29T09:00:00.000'),
+                timeNow = moment();
+
             slashCommand.replyPublic(message,
-                'Ended working time: tuesday, **6.5.2017** at **15:45**.\n' +
+                'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:MM') + '*.\n' +
+                'Total time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
                 'Well, tomorrow is another day. Good job!'
             );
-            */
         }
 
         else {
