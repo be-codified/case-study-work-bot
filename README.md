@@ -33,7 +33,7 @@ This will set end of working time.
 ```
 
 Returns following message:
-- Ended working time: tuesday, **6.5.2017** at **15:45**. Well, tomorrow is another day. Good job!
+- Ended working time: tuesday, **6.5.2017** at **15:47**. Total time: **8:02**. Well, tomorrow is another day. Good job!
 
 ---
 
