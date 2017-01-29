@@ -60,10 +60,16 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
  *
  */
 
-var timeRemain = function(timeStart, timeNow) {
-    var timeMandatory = 8 * 60 * 60 * 1000; // 8 hours in miliseconds
+// NOTE: unix time is in seconds, duration expects miliseconds
 
-    return moment.duration(timeStart + timeMandatory - timeNow, 'hours').format('HH:MM');
+var timeRemain = function(timeStart, timeNow) {
+    var timeMandatory = 8 * 60 * 60; // 8 hours in seconds
+
+    return moment.duration((timeStart.unix() + timeMandatory - timeNow.unix()) * 1000 ).format('HH:mm');
+};
+
+var timeDuration = function(timeStart, timeNow) {
+    return moment.duration((timeNow.unix() - timeStart.unix()) * 1000 ).format('HH:mm');
 };
 
 /**
@@ -82,18 +88,19 @@ controller.on('slash_command', function (slashCommand, message) {
     if (message.command === '/work') {
 
         if (message.text === 'start') {
-            var timeStart = moment().format('dddd, DD.MM.YYYY [at] HH:MM');
+            var timeStart = moment('2017-01-29T11:45:00Z');
 
             slashCommand.replyPublic(message,
-                'Started working time: *' + timeStart + '*.\n' +
+                'Started working time: *' + timeStart.format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
                 'Time to get work done, we need to make some money.'
             );
         }
 
         else if (message.text === 'status') {
-            var timeStart = moment('2017-01-29T09:00:00.000'),
+            var timeStart = moment('2017-01-29T11:45:00Z'),
                 timeNow = moment();
 
+            // TODO: output proper message if more than 8 hours have passed by
             slashCommand.replyPublic(message,
                 'Remaining working time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
                 'Oh, the time flies so fast.'
@@ -101,12 +108,12 @@ controller.on('slash_command', function (slashCommand, message) {
         }
 
         else if (message.text === 'end') {
-            var timeStart = moment('2017-01-29T09:00:00.000'),
+            var timeStart = moment('2017-01-29T11:45:00Z'),
                 timeNow = moment();
 
             slashCommand.replyPublic(message,
-                'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:MM') + '*.\n' +
-                'Total time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
+                'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
+                'Total time: *' + timeDuration(timeStart, timeNow) + '*.\n' +
                 'Well, tomorrow is another day. Good job!'
             );
         }
