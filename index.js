@@ -1,9 +1,10 @@
 var Botkit = require('botkit');
+var mongoose = require('mongoose');
 var moment = require('moment');
 require('moment-duration-format');
 
 /**
- * Config
+ * Botkit config
  *
  */
 
@@ -38,6 +39,20 @@ var controller = Botkit.slackbot(config).configureSlackApp(
 );
 
 /**
+ * Mongo config
+ */
+
+mongoose.connect('mongodb://localhost/test');
+
+var UserSchema = new mongoose.Schema({
+    userId: String,
+    time: String,
+    type: String
+});
+
+var User = mongoose.model('User', UserSchema);
+
+/**
  * Login
  *
  */
@@ -60,7 +75,7 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
  *
  */
 
-// NOTE: unix time is in seconds, duration expects miliseconds
+// NOTE: unix time returns seconds, duration expects milliseconds
 
 var timeRemain = function(timeStart, timeNow) {
     var timeMandatory = 8 * 60 * 60; // 8 hours in seconds
@@ -86,19 +101,36 @@ controller.on('slash_command', function (slashCommand, message) {
 
     // check for `work` command
     if (message.command === '/work') {
+        var timeStart,
+            timeNow = moment();
 
         if (message.text === 'start') {
-            var timeStart = moment('2017-01-29T11:45:00Z');
+            timeStart = new Date();
 
-            slashCommand.replyPublic(message,
-                'Started working time: *' + timeStart.format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
-                'Time to get work done, we need to make some money.'
-            );
+            var user = new User({
+                userId: message.user_id,
+                time: timeStart,
+                type: 'start'
+            });
+
+            user.save(function(err) {
+                if (err) {
+                    slashCommand.replyPublic(message,
+                        'Sorry mate, could not save data. Please check your database.'
+                    );
+                }
+                else {
+                    slashCommand.replyPublic(message,
+                        'Started working time: *' + moment(timeStart).format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
+                        'Time to get work done, we need to make some money.'
+                    );
+                }
+            });
+
         }
 
         else if (message.text === 'status') {
-            var timeStart = moment('2017-01-29T11:45:00Z'),
-                timeNow = moment();
+            timeStart = moment('2017-01-29T11:45:00Z');
 
             // TODO: output proper message if more than 8 hours have passed by
             slashCommand.replyPublic(message,
@@ -108,8 +140,7 @@ controller.on('slash_command', function (slashCommand, message) {
         }
 
         else if (message.text === 'end') {
-            var timeStart = moment('2017-01-29T11:45:00Z'),
-                timeNow = moment();
+            timeStart = moment('2017-01-29T11:45:00Z');
 
             slashCommand.replyPublic(message,
                 'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
