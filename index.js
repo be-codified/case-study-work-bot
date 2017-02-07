@@ -5,7 +5,6 @@ require('moment-duration-format');
 
 /**
  * Botkit config
- *
  */
 
 if (!process.env.CLIENT_ID ||
@@ -44,17 +43,16 @@ var controller = Botkit.slackbot(config).configureSlackApp(
 
 mongoose.connect('mongodb://localhost/test');
 
-var UserSchema = new mongoose.Schema({
-    userId: String,
-    time: String,
-    type: String
+var TimeSchema = new mongoose.Schema({
+    time: Date,
+    type: String,
+    userId: String
 });
 
-var User = mongoose.model('User', UserSchema);
+var Time = mongoose.model('Time', TimeSchema);
 
 /**
  * Login
- *
  */
 
 controller.setupWebserver(process.env.PORT, function (err, webserver) {
@@ -72,7 +70,6 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
 
 /**
  * Helpers
- *
  */
 
 // NOTE: unix time returns seconds, duration expects milliseconds
@@ -89,7 +86,6 @@ var timeDuration = function(timeStart, timeNow) {
 
 /**
  * Commands
- *
  */
 
 controller.on('slash_command', function (slashCommand, message) {
@@ -99,25 +95,22 @@ controller.on('slash_command', function (slashCommand, message) {
         return false;
     }
 
-    // check for `work` command
+    // Check for `work` command
     if (message.command === '/work') {
         var timeStart,
             timeNow = moment();
 
+        // Command `start`
         if (message.text === 'start') {
-            timeStart = new Date();
+            timeStart = moment();
 
-            var user = new User({
-                userId: message.user_id,
+            Time.create({
                 time: timeStart,
-                type: 'start'
-            });
-
-            user.save(function(err) {
+                type: 'start',
+                userId: message.user_id
+            }, function(err, time) {
                 if (err) {
-                    slashCommand.replyPublic(message,
-                        'Sorry mate, could not save data. Please check your database.'
-                    );
+                    console.log(err)
                 }
                 else {
                     slashCommand.replyPublic(message,
@@ -126,11 +119,25 @@ controller.on('slash_command', function (slashCommand, message) {
                     );
                 }
             });
-
         }
 
+        // Command `status`
         else if (message.text === 'status') {
-            timeStart = moment('2017-01-29T11:45:00Z');
+            Time.find({ userId: message.user_id }).sort({ _id: -1 }).limit(1).exec(function(err, times) {
+                if (err) {
+                    // TODO: output proper error
+                    console.log('I got some error!');
+                }
+                else {
+                    console.log(times);
+                    timeStart = moment(times[0].time);
+
+                    console.log('>>>', timeStart);
+
+                    console.log('timeStart', timeStart);
+                    console.log('timeNow', timeNow);
+                }
+            });
 
             // TODO: output proper message if more than 8 hours have passed by
             slashCommand.replyPublic(message,
@@ -139,6 +146,7 @@ controller.on('slash_command', function (slashCommand, message) {
             );
         }
 
+        // Command `end`
         else if (message.text === 'end') {
             timeStart = moment('2017-01-29T11:45:00Z');
 
