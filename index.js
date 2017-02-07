@@ -1,7 +1,9 @@
-var Botkit = require('botkit');
-var mongoose = require('mongoose');
-var moment = require('moment');
+const Botkit = require('botkit');
+const mongoose = require('mongoose');
+const moment = require('moment');
 require('moment-duration-format');
+
+const helpers = require('./helpers.js');
 
 /**
  * Botkit config
@@ -18,7 +20,7 @@ if (!process.env.CLIENT_ID ||
 var config = {};
 
 if (process.env.MONGOLAB_URI) {
-    var BotkitStorage = require('botkit-storage-mongo');
+    const BotkitStorage = require('botkit-storage-mongo');
     config = {
         storage: BotkitStorage({ mongoUri: process.env.MONGOLAB_URI })
     };
@@ -29,7 +31,7 @@ else {
     };
 }
 
-var controller = Botkit.slackbot(config).configureSlackApp(
+const controller = Botkit.slackbot(config).configureSlackApp(
     {
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
@@ -43,13 +45,13 @@ var controller = Botkit.slackbot(config).configureSlackApp(
 
 mongoose.connect('mongodb://localhost/test');
 
-var TimeSchema = new mongoose.Schema({
+const TimeSchema = new mongoose.Schema({
     time: Date,
     type: String,
     userId: String
 });
 
-var Time = mongoose.model('Time', TimeSchema);
+const Time = mongoose.model('Time', TimeSchema);
 
 /**
  * Login
@@ -69,41 +71,6 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
 });
 
 /**
- * Helpers
- */
-
-/** Helper timeRemain
- *
- * @param {object} timeStart - Date/time of start time.
- * @param {object} timeNow - Date/time of now.
- *
- * @return {string} Time remaining in HH:mm format.
- *
- */
-
-var timeRemain = function(timeStart, timeNow) {
-    var timeMandatory = 8 * 60 * 60; // 8 hours in seconds
-
-    // NOTE: unix time returns seconds, duration expects milliseconds
-    return moment.duration((moment(timeStart).unix() + timeMandatory - moment(timeNow).unix()) * 1000).format('HH:mm');
-};
-
-/** Helper timeDuration
- *
- * @param {object} timeStart - Date/time of start time.
- * @param {object} timeNow - Date/time of now.
- *
- * @return {string} Time duration in HH:mm format.
- *
- */
-
-var timeDuration = function(timeStart, timeNow) {
-
-    // NOTE: unix time returns seconds, duration expects milliseconds
-    return moment.duration((timeNow.unix() - timeStart.unix()) * 1000).format('HH:mm');
-};
-
-/**
  * Commands
  */
 
@@ -116,8 +83,8 @@ controller.on('slash_command', function (slashCommand, message) {
 
     // Check for `work` command
     if (message.command === '/work') {
-        var timeStart,
-            timeNow = new Date();
+        const timeNow = new Date();
+        var timeStart;
 
         // Command `start`
         if (message.text === 'start') {
@@ -129,7 +96,8 @@ controller.on('slash_command', function (slashCommand, message) {
                 userId: message.user_id
             }, function(err, time) {
                 if (err) {
-                    console.log(err)
+                    // TODO: output proper error
+                    console.log('I got some error!');
                 }
                 else {
                     slashCommand.replyPublic(message,
@@ -150,12 +118,11 @@ controller.on('slash_command', function (slashCommand, message) {
                         console.log('I got some error!');
                     }
                     else {
-                        console.log(times);
-                        timeStart = times[0].time;
+                        const timeStart = times[0].time;
 
                         // TODO: output proper message if more than 8 hours have passed by
                         slashCommand.replyPublic(message,
-                            'Remaining working time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
+                            'Remaining working time: *' + helpers.timeRemain(timeStart, timeNow) + '*.\n' +
                             'Oh, the time flies so fast.'
                         );
                     }
