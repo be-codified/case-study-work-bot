@@ -72,12 +72,20 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
  * Helpers
  */
 
-// NOTE: unix time returns seconds, duration expects milliseconds
+/** Helper timeRemain()
+ *
+ * @param {object} timeStart - Datetime of start time in ISO format.
+ * @param {object} timeNow - Datetime of now in ISO format.
+ *
+ * @return {string} Duration in HH:mm format.
+ *
+ */
 
 var timeRemain = function(timeStart, timeNow) {
     var timeMandatory = 8 * 60 * 60; // 8 hours in seconds
 
-    return moment.duration((timeStart.unix() + timeMandatory - timeNow.unix()) * 1000 ).format('HH:mm');
+    // NOTE: unix time returns seconds, duration expects milliseconds
+    return moment.duration((moment(timeStart).unix() + timeMandatory - moment(timeNow).unix()) * 1000 ).format('HH:mm');
 };
 
 var timeDuration = function(timeStart, timeNow) {
@@ -90,7 +98,7 @@ var timeDuration = function(timeStart, timeNow) {
 
 controller.on('slash_command', function (slashCommand, message) {
 
-    // check token match
+    // Check token match
     if (message.token !== process.env.VERIFICATION_TOKEN) {
         return false;
     }
@@ -98,14 +106,14 @@ controller.on('slash_command', function (slashCommand, message) {
     // Check for `work` command
     if (message.command === '/work') {
         var timeStart,
-            timeNow = moment();
+            timeNow = new Date();
 
         // Command `start`
         if (message.text === 'start') {
             timeStart = moment();
 
             Time.create({
-                time: timeStart,
+                time: timeStart, // NOTE: date will be written as ISO format in database
                 type: 'start',
                 userId: message.user_id
             }, function(err, time) {
@@ -123,27 +131,24 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `status`
         else if (message.text === 'status') {
-            Time.find({ userId: message.user_id }).sort({ _id: -1 }).limit(1).exec(function(err, times) {
-                if (err) {
-                    // TODO: output proper error
-                    console.log('I got some error!');
-                }
-                else {
-                    console.log(times);
-                    timeStart = moment(times[0].time);
+            Time.find({ userId: message.user_id })
+                .sort({ _id: -1 }).limit(1)
+                .exec(function(err, times) {
+                    if (err) {
+                        // TODO: output proper error
+                        console.log('I got some error!');
+                    }
+                    else {
+                        console.log(times);
+                        timeStart = times[0].time;
 
-                    console.log('>>>', timeStart);
-
-                    console.log('timeStart', timeStart);
-                    console.log('timeNow', timeNow);
-                }
+                        // TODO: output proper message if more than 8 hours have passed by
+                        slashCommand.replyPublic(message,
+                            'Remaining working time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
+                            'Oh, the time flies so fast.'
+                        );
+                    }
             });
-
-            // TODO: output proper message if more than 8 hours have passed by
-            slashCommand.replyPublic(message,
-                'Remaining working time: *' + timeRemain(timeStart, timeNow) + '*.\n' +
-                'Oh, the time flies so fast.'
-            );
         }
 
         // Command `end`
