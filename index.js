@@ -72,12 +72,12 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
  * Helpers
  */
 
-/** Helper timeRemain()
+/** Helper timeRemain
  *
- * @param {object} timeStart - Datetime of start time in ISO format.
- * @param {object} timeNow - Datetime of now in ISO format.
+ * @param {object} timeStart - Date/time of start time.
+ * @param {object} timeNow - Date/time of now.
  *
- * @return {string} Duration in HH:mm format.
+ * @return {string} Time remaining in HH:mm format.
  *
  */
 
@@ -85,11 +85,22 @@ var timeRemain = function(timeStart, timeNow) {
     var timeMandatory = 8 * 60 * 60; // 8 hours in seconds
 
     // NOTE: unix time returns seconds, duration expects milliseconds
-    return moment.duration((moment(timeStart).unix() + timeMandatory - moment(timeNow).unix()) * 1000 ).format('HH:mm');
+    return moment.duration((moment(timeStart).unix() + timeMandatory - moment(timeNow).unix()) * 1000).format('HH:mm');
 };
 
+/** Helper timeDuration
+ *
+ * @param {object} timeStart - Date/time of start time.
+ * @param {object} timeNow - Date/time of now.
+ *
+ * @return {string} Time duration in HH:mm format.
+ *
+ */
+
 var timeDuration = function(timeStart, timeNow) {
-    return moment.duration((timeNow.unix() - timeStart.unix()) * 1000 ).format('HH:mm');
+
+    // NOTE: unix time returns seconds, duration expects milliseconds
+    return moment.duration((timeNow.unix() - timeStart.unix()) * 1000).format('HH:mm');
 };
 
 /**
