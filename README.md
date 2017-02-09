@@ -43,6 +43,8 @@ This will show all working time records.
 /workbot list
 ```
 
+Returns following message:
+
 ```
 ...
 Start: Thu, 09.02.17, 08:38
@@ -65,8 +67,6 @@ lt --port 8765 --subdomain workbot
 Url:
 
 https://workbot.localtunnel.me
-
-// Deprecated idea: Using service api.ai -> Perhaps another day.
 
 ## Login teams
 
