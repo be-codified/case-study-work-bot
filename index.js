@@ -131,9 +131,9 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `end`
         else if (message.text === 'end') {
-            Time.find({ userId: message.user_id })
-                .sort({ _id: -1 }).limit(1)
-                .exec(function(err, times) {
+            Time.find({userId: message.user_id})
+                .sort({_id: -1}).limit(1)
+                .exec(function (err, times) {
                     if (err) {
                         // TODO: output proper error
                         console.log('I got some error!');
@@ -142,10 +142,10 @@ controller.on('slash_command', function (slashCommand, message) {
                         const timeStart = times[0].time;
 
                         Time.create({
-                            time: timeStart, // NOTE: date will be written as ISO format in database
+                            time: timeNow, // NOTE: date will be written as ISO format in database
                             type: 'end',
                             userId: message.user_id
-                        }, function(err, time) {
+                        }, function (err, time) {
                             if (err) {
                                 // TODO: output proper error
                                 console.log('I got some error!');
@@ -161,7 +161,34 @@ controller.on('slash_command', function (slashCommand, message) {
                     }
                 });
         }
+        else if (message.text === 'list') {
+            Time.find({ userId: message.user_id })
+                .sort({ time: 1 })
+                .exec(function(err, times) {
+                    if (err) {
+                        // TODO: output proper error
+                        console.log('I got some error!');
+                    }
+                    else {
+                        const mapper = {
+                            start: 'Start:',
+                            end: 'End:  '
+                        };
 
+                        var output = 'Listing all recorded times\n\n';
+                            output += '```';
+
+                        times.forEach(function(time) {
+                            output += mapper[time.type] + ' ' +
+                                      moment(time.time).format('ddd, DD.MM.YY, HH:mm') + '\n';
+                        });
+
+                        output += '```';
+
+                        slashCommand.replyPublic(message, output);
+                    }
+                });
+        }
         else {
             slashCommand.replyPublic(message,
                 'I\'m afraid I don\'t know how to ' + message.command + ' yet.'
