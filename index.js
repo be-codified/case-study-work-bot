@@ -82,7 +82,7 @@ controller.on('slash_command', function (slashCommand, message) {
     }
 
     // Check for `work` command
-    if (message.command === '/work') {
+    if (message.command === '/devwork' || message.command === '/work') {
         const timeNow = new Date();
         var timeStart;
 
@@ -131,13 +131,35 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `end`
         else if (message.text === 'end') {
-            timeStart = moment('2017-01-29T11:45:00Z');
+            Time.find({ userId: message.user_id })
+                .sort({ _id: -1 }).limit(1)
+                .exec(function(err, times) {
+                    if (err) {
+                        // TODO: output proper error
+                        console.log('I got some error!');
+                    }
+                    else {
+                        const timeStart = times[0].time;
 
-            slashCommand.replyPublic(message,
-                'Ended working time: *' + timeNow.format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
-                'Total time: *' + timeDuration(timeStart, timeNow) + '*.\n' +
-                'Well, tomorrow is another day. Good job!'
-            );
+                        Time.create({
+                            time: timeStart, // NOTE: date will be written as ISO format in database
+                            type: 'end',
+                            userId: message.user_id
+                        }, function(err, time) {
+                            if (err) {
+                                // TODO: output proper error
+                                console.log('I got some error!');
+                            }
+                            else {
+                                slashCommand.replyPublic(message,
+                                    'Ended working time: *' + moment(timeNow).format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
+                                    'Total time: *' + helpers.timeDuration(timeStart, timeNow) + '*.\n' +
+                                    'Well, tomorrow is another day. Good job!'
+                                );
+                            }
+                        });
+                    }
+                });
         }
 
         else {

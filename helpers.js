@@ -28,7 +28,7 @@ const timeRemain = (timeStart, timeNow) => {
 const timeDuration = (timeStart, timeNow) => {
 
     // NOTE: unix time returns seconds, duration expects milliseconds
-    return moment.duration((timeNow.unix() - timeStart.unix()) * 1000).format('HH:mm');
+    return moment.duration((moment(timeNow).unix() - moment(timeStart).unix()) * 1000).format('HH:mm');
 };
 
 module.exports = { timeRemain, timeDuration };
