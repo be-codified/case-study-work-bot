@@ -35,11 +35,24 @@ This will set end of working time.
 Returns following message:
 - Ended working time: tuesday, **6.5.2017** at **15:47**. Total time: **8:02**. Well, tomorrow is another day. Good job!
 
+### List
+
+This will show all working time records.
+
+```
+/workbot list
+```
+
+```
+...
+Start: Thu, 09.02.17, 08:38
+End:   Thu, 09.02.17, 17:22
+```
 ---
 
 ## Automation
 
-Command `/workbot status` could be called automatically when aproaching to end time.
+Command `/workbot status` could be called automatically when approaching to end time.
 
 ## API
 
