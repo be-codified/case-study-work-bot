@@ -82,7 +82,7 @@ controller.on('slash_command', function (slashCommand, message) {
     }
 
     // Check for `work` command
-    if (message.command === '/devwork' || message.command === '/work') {
+    if (message.command === '/devworkbot' || message.command === '/workbot') {
         const timeNow = new Date();
         var timeStart;
 
@@ -97,12 +97,13 @@ controller.on('slash_command', function (slashCommand, message) {
             var todayEnd = new Date();
             todayEnd.setHours(23, 59, 59, 999);
 
-            Time.find(
-                {'time': {
+            Time.find({
+                type: 'start',
+                time: {
                     '$gte': todayStart,
                     '$lte': todayEnd
-                }}
-            ).exec(function(err, times) {
+                }
+            }).exec(function(err, times) {
                 if (err) {
                     // TODO: output proper error
                     console.log('I got some error!');
@@ -188,6 +189,8 @@ controller.on('slash_command', function (slashCommand, message) {
                     }
                 });
         }
+
+        // Command `list`
         else if (message.text === 'list') {
             Time.find({ userId: message.user_id })
                 .sort({ time: 1 })
@@ -207,7 +210,9 @@ controller.on('slash_command', function (slashCommand, message) {
 
                         times.forEach(function(time) {
                             output += mapper[time.type] + ' ' +
-                                      moment(time.time).format('ddd, DD.MM.YY, HH:mm') + '\n';
+                                      moment(time.time).format('ddd, DD.MM.YY, HH:mm') + ' | ' +
+                                      time._id + ' ' + '\n';
+
                         });
 
                         output += '```';
@@ -216,6 +221,18 @@ controller.on('slash_command', function (slashCommand, message) {
                     }
                 });
         }
+
+        // Command `help`
+        else if (message.text === 'help') {
+            slashCommand.replyPublic(message,
+                'Here are commands you can use:\n\n' +
+                '`/workbot start` sets start of working time.\n' +
+                '`/workbot status` shows remaining working time.\n' +
+                '`/workbot end` sets end of working time.\n' +
+                '`/workbot list` shows all working times.'
+            );
+        }
+
         else {
             slashCommand.replyPublic(message,
                 'I\'m afraid I don\'t know how to ' + message.command + ' yet.'

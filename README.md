@@ -37,7 +37,7 @@ Returns following message:
 
 ### List
 
-This will show all working time records.
+This will show all working times.
 
 ```
 /workbot list
