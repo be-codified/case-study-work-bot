@@ -98,11 +98,12 @@ controller.on('slash_command', function (slashCommand, message) {
             todayEnd.setHours(23, 59, 59, 999);
 
             Time.find({
-                type: 'start',
                 time: {
                     '$gte': todayStart,
                     '$lte': todayEnd
-                }
+                },
+                type: 'start',
+                userId: message.user_id
             }).exec(function(err, times) {
                 if (err) {
                     // TODO: output proper error
