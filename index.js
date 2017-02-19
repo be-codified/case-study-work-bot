@@ -7,6 +7,7 @@ const commandStart = require('./commands/commandStart.js');
 const commandStatus = require('./commands/commandStatus.js');
 const commandEnd = require('./commands/commandEnd.js');
 const commandList = require('./commands/commandList.js');
+const commandDelete = require('./commands/commandDelete.js');
 const helpers = require('./helpers.js');
 
 /**
@@ -107,6 +108,11 @@ controller.on('slash_command', function (slashCommand, message) {
         // Command `list`
         else if (message.text === 'list') {
             commandList(Time, message, slashCommand);
+        }
+
+        // Command `delete`
+        else if (message.text === 'delete') {
+            commandDelete(Time, message, slashCommand);
         }
 
         // Command `help`
