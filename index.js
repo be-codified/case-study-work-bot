@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 require('moment-duration-format');
 
+const commandStatus = require('./commands/commandStatus.js');
 const commandList = require('./commands/commandList.js');
 const helpers = require('./helpers.js');
 
@@ -84,11 +85,11 @@ controller.on('slash_command', function (slashCommand, message) {
 
     // Check for `work` command
     if (message.command === '/devworkbot' || message.command === '/workbot') {
-        const timeNow = new Date();
         var timeStart;
 
         // Command `start`
         if (message.text === 'start') {
+            const timeNow = new Date();
             timeStart = moment();
 
             // Checking if start time for current day already exists
@@ -135,23 +136,7 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `status`
         else if (message.text === 'status') {
-            Time.find({ userId: message.user_id })
-                .sort({ _id: -1 }).limit(1)
-                .exec(function(err, times) {
-                    if (err) {
-                        // TODO: output proper error
-                        console.log('I got some error!');
-                    }
-                    else {
-                        const timeStart = times[0].time;
-
-                        // TODO: output proper message if more than 8 hours have passed by
-                        slashCommand.replyPublic(message,
-                            'Remaining working time: *' + helpers.timeRemain(timeStart, timeNow) + '*.\n' +
-                            'Oh, the time flies so fast.'
-                        );
-                    }
-            });
+            commandStatus(Time, message, slashCommand);
         }
 
         // Command `end`
