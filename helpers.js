@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-/** TimeRemain
+/** Time remain
  *
  * @param {object} timeStart - Date/time of start time.
  * @param {object} timeNow - Date/time of now.
@@ -16,7 +16,7 @@ const timeRemain = (timeStart, timeNow) => {
     return moment.duration((moment(timeStart).unix() + timeMandatory - moment(timeNow).unix()) * 1000).format('HH:mm');
 };
 
-/** TimeDuration
+/** Time duration
  *
  * @param {object} timeStart - Date/time of start time.
  * @param {object} timeNow - Date/time of now.
@@ -31,4 +31,26 @@ const timeDuration = (timeStart, timeNow) => {
     return moment.duration((moment(timeNow).unix() - moment(timeStart).unix()) * 1000).format('HH:mm');
 };
 
-module.exports = { timeRemain, timeDuration };
+/** Limits of today
+ *
+ * @param {object} todayStart - Morning date/time limit of today.
+ * @param {object} todayEnd - Evening date/time limit of today.
+ *
+ * @return {object} Limits of today.
+ *
+ */
+
+const limitsOfToday = () => {
+    var todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    var todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    return {
+        todayStart: todayStart,
+        todayEnd: todayEnd,
+    }
+};
+
+module.exports = { timeRemain, timeDuration, limitsOfToday };
