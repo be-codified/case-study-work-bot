@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 require('moment-duration-format');
 
+const commandStart = require('./commands/commandStart.js');
 const commandStatus = require('./commands/commandStatus.js');
+const commandEnd = require('./commands/commandEnd.js');
 const commandList = require('./commands/commandList.js');
 const helpers = require('./helpers.js');
 
@@ -89,49 +91,7 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `start`
         if (message.text === 'start') {
-            const timeNow = new Date();
-            timeStart = moment();
-
-            // Checking if start time for current day already exists
-            Time.find({
-                time: {
-                    '$gte': helpers.limitsOfToday().todayStart,
-                    '$lte': helpers.limitsOfToday().todayEnd
-                },
-                type: 'start',
-                userId: message.user_id
-            }).exec(function(err, times) {
-                if (err) {
-                    // TODO: output proper error
-                    console.log('I got some error!');
-                }
-                // Refusing inserting time started
-                else if (times.length) {
-                    slashCommand.replyPublic(message,
-                        'This is odd, haven\'t you already started to work today?'
-                    );
-                }
-                // Inserting time started
-                else {
-                    Time.create({
-                        time: timeStart, // NOTE: date will be written as ISO format in database
-                        type: 'start',
-                        userId: message.user_id
-                    }, function(err, time) {
-                        if (err) {
-                            // TODO: output proper error
-                            console.log('I got some error!');
-                        }
-                        else {
-                            slashCommand.replyPublic(message,
-                                'Started working time: *' + moment(timeStart)
-                                    .format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
-                                'Time to get work done, we need to make some money.'
-                            );
-                        }
-                    });
-                }
-            });
+            commandStart(Time, message, slashCommand);
         }
 
         // Command `status`
@@ -141,60 +101,7 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `end`
         else if (message.text === 'end') {
-
-            // Checking if end time for current day already exists
-            Time.find({
-                time: {
-                    '$gte': helpers.limitsOfToday().todayStart,
-                    '$lte': helpers.limitsOfToday().todayEnd
-                },
-                type: 'end',
-                userId: message.user_id
-            }).exec(function(err, times) {
-                if (err) {
-                    // TODO: output proper error
-                    console.log('I got some error!');
-                }
-                // Refusing inserting time ended
-                else if (times.length) {
-                    slashCommand.replyPublic(message,
-                        'This is odd, haven\'t you already ended your work today?'
-                    );
-                }
-                // Ending procedure
-                else {
-                    Time.find({userId: message.user_id})
-                        .sort({_id: -1}).limit(1)
-                        .exec(function (err, times) {
-                            if (err) {
-                                // TODO: output proper error
-                                console.log('I got error!');
-                            }
-                            else {
-                                const timeStart = times[0].time;
-
-                                Time.create({
-                                    time: timeNow, // NOTE: date will be written as ISO format in database
-                                    type: 'end',
-                                    userId: message.user_id
-                                }, function (err, time) {
-                                    if (err) {
-                                        // TODO: output proper error
-                                        console.log('I got some error!');
-                                    }
-                                    else {
-                                        slashCommand.replyPublic(message,
-                                            'Ended working time: *' + moment(timeNow)
-                                                .format('dddd, DD.MM.YYYY [at] HH:mm') + '*.\n' +
-                                            'Total time: *' + helpers.timeDuration(timeStart, timeNow) + '*.\n' +
-                                            'Well, tomorrow is another day. Good job!'
-                                        );
-                                    }
-                                });
-                            }
-                        });
-                }
-            });
+            commandEnd(Time, message, slashCommand);
         }
 
         // Command `list`
