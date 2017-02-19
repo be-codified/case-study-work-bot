@@ -214,7 +214,7 @@ controller.on('slash_command', function (slashCommand, message) {
 
         // Command `list`
         else if (message.text === 'list') {
-            commandList();
+            commandList(Time, message, slashCommand);
         }
 
         // Command `help`
