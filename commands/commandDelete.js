@@ -2,6 +2,17 @@ const helpers = require('../helpers.js');
 
 const commandDelete = (Time, message, slashCommand) => {
 
+    // TODO
+
+    var str = message.text;
+    var re = /delete .*/;
+
+    console.log(message.text);
+
+    var found = str.match(re);
+
+    console.log('>>>', found);
+
     // TODO: implementation
 
     slashCommand.replyPublic(message,
